@@ -6,6 +6,17 @@ Automatically export outstanding tasks from Obsidian vault to CSV for ManicTime 
 
 An Obsidian plugin that integrates task export functionality directly into Obsidian, providing both on-demand and automatic export capabilities with a native user experience.
 
+**Related Repository**: [markdown-task-export](https://github.com/tailormade-eu/markdown-task-export) - C# Console Application (Iteration 1)
+
+**⚠️ REFERENCE IMPLEMENTATION:**
+This plugin is a **port of the working C# console application**. Use the C# codebase as a reference:
+- `src/MarkdownParser.cs` - Complete parsing logic with all edge cases
+- `src/CsvExporter.cs` - CSV generation with compression and header control
+- `src/TaskExtractor.cs` - Customer/Project extraction and file enumeration
+- `src/Models/TaskItem.cs` - Data structure for tasks
+
+The TypeScript implementation should produce **identical CSV output** to the C# version.
+
 ## Functional Requirements
 
 ### 1. Plugin Integration
@@ -61,10 +72,18 @@ An Obsidian plugin that integrates task export functionality directly into Obsid
 - Multi-line task descriptions
 
 **Parsing Logic**
-- Use same extraction rules as console app
-- Extract hierarchical headers (##, ###, ####)
+- Use same extraction rules as console app (reference: `MarkdownParser.cs`)
+- Extract hierarchical headers (##, ###, ####, etc.) - unlimited depth
 - Associate tasks with parent headers
 - Handle nested task patterns
+- Preserve hierarchy when parent tasks have sub-tasks
+
+**Key Parsing Details from C# Implementation:**
+- Headers start at `##` (H2), `#` (H1) is ignored
+- Empty header levels are tracked to preserve structure
+- Parent tasks (tasks with sub-tasks) become additional header levels
+- Indentation-based nesting detection
+- Skip tasks with checkmark emojis in the text
 
 ### 4. Export Functionality
 
@@ -101,6 +120,8 @@ interface TaskExportSettings {
     exportOnSave: boolean;           // Trigger on file save
     exportOnModify: boolean;         // Trigger on file modify
     showNotifications: boolean;      // Show export notifications
+    compressLevels: boolean;         // Remove empty hierarchy columns
+    includeHeader: boolean;          // Include CSV header row
     debounceDelay: number;           // Debounce delay in seconds (1-30)
 }
 ```
@@ -112,6 +133,8 @@ interface TaskExportSettings {
 - exportOnSave: `true`
 - exportOnModify: `false`
 - showNotifications: `true`
+- compressLevels: `false`
+- includeHeader: `true`
 - debounceDelay: `3`
 
 **Settings Persistence**
@@ -123,16 +146,26 @@ interface TaskExportSettings {
 ### 6. CSV Output (Same as Console App)
 
 **Format**
-- Header: `CustomerName,ProjectName,Header1,Header2,Header3,Task`
-- Dynamic columns (no empty trailing commas)
-- Proper CSV escaping
-- UTF-8 with BOM
+- Header: `CustomerName,ProjectName,Level1,Level2,Level3,...,Task`
+- **Dynamic columns**: Unlimited depth support (Level1, Level2, Level3, etc.)
+- **Compression mode**: Optional `compressLevels` setting to remove empty columns
+  - When enabled: Each row only outputs non-empty levels (no padding)
+  - When disabled: All rows padded to maximum depth with empty columns
+- **Header control**: Optional `includeHeader` setting to exclude header row
+- Proper CSV escaping (commas, quotes, newlines)
+- UTF-8 with BOM encoding for Excel compatibility
+
+**CSV Escaping Rules (from C# implementation):**
+- Wrap in quotes if field contains: comma, quote, newline, or carriage return
+- Double any quotes inside the field: `"` becomes `""`
+- Example: `Task with "quotes"` becomes `"Task with ""quotes"""`
 
 **File Writing**
-- Use Obsidian's `vault.adapter.write()` API
-- Atomic write (write to temp, then rename)
+- Use Obsidian's `vault.adapter.write()` API (cross-platform compatible)
+- Atomic write (write to temp, then rename) - optional for reliability
 - Handle write failures gracefully
-- Output path relative to vault root
+- Output path relative to vault root (mobile-friendly)
+- Support absolute paths on desktop only
 
 ### 7. Error Handling
 
@@ -176,16 +209,26 @@ interface TaskExportSettings {
 **Obsidian Version**
 - Minimum: Obsidian 1.0.0
 - Tested on latest stable release
-- API compatibility with mobile (future consideration)
+- Full API compatibility across all platforms
 
-**Operating Systems**
-- Windows 10/11
-- macOS 11+
-- Linux (major distributions)
+**Platforms (Cross-Platform Support)**
+- ✅ Windows 10/11
+- ✅ macOS 11+
+- ✅ Linux (major distributions)
+- ✅ Android 8.0+
+- ✅ iOS 13+
+- ✅ Web version
+- **One codebase works on all platforms**
+
+**Platform-Specific Considerations:**
+- Desktop: Full file system access (can save CSV outside vault)
+- Mobile: Limited to vault directory only
+- Use Obsidian's Vault API exclusively (not Node.js `fs` module)
+- Detect platform with `Platform.isMobile`, `Platform.isDesktop`
 
 **Vault Types**
 - Local vaults
-- Synced vaults (Dropbox, OneDrive, etc.)
+- Synced vaults (Dropbox, OneDrive, iCloud, etc.)
 - Git-based vaults
 
 ### Usability
@@ -221,39 +264,82 @@ interface TaskExportSettings {
 
 ### Technology Stack
 
+**Development Environment**
+- **Visual Studio Code** - Primary IDE
+- **Microsoft Stack** - Preferred tooling where applicable
+- **Extensions**:
+  - ESLint - Code quality
+  - Prettier - Code formatting
+  - TypeScript - Language support
+  - Obsidian Plugin Dev Tools (if available)
+
 **Required**
 - TypeScript 4.0+
 - Obsidian Plugin API (latest)
-- Node.js 16+ (development only)
-- Rollup (bundling)
+- Node.js 16+ (development only, not needed by users)
+- esbuild (fast bundling, replaces Rollup)
+
+**Cross-Platform Compatibility**
+- ✅ Use Obsidian's Vault API exclusively
+- ✅ Use `normalizePath()` for path handling
+- ✅ Use `app.vault.adapter.read()` for file reading
+- ✅ Use `app.vault.adapter.write()` for file writing
+- ❌ Avoid Node.js modules: `fs`, `path`, `os` (desktop-only)
+- ❌ Never use absolute paths outside vault on mobile
+
+**API Examples:**
+```typescript
+// ✅ Good - cross-platform
+const content = await this.app.vault.adapter.read(filePath);
+await this.app.vault.adapter.write(outputPath, csvContent);
+const normalized = normalizePath(userPath);
+
+// ❌ Bad - desktop only
+import * as fs from 'fs';
+fs.readFileSync(filePath);
+```
 
 **Optional Libraries**
 - None required (use vanilla TypeScript/Obsidian API)
-- Consider: `csv-stringify` for robust CSV generation
+- Consider: Built-in CSV generation (no external dependencies)
 
 ### Project Structure
 
+**Directory Layout:**
 ```
-obsidian-task-export-plugin/
-├── src/
-│   ├── main.ts              # Plugin entry, command registration
-│   ├── settings.ts          # Settings interface and tab
-│   ├── exporter.ts          # Core export logic
-│   ├── parser.ts            # Markdown parsing
-│   ├── csv-writer.ts        # CSV generation
-│   ├── file-watcher.ts      # File monitoring and debouncing
-│   └── types.ts             # TypeScript interfaces
+obsidian-task-export-plugin/          ← Repository root
+├── .vscode/                          ← VS Code settings
+│   ├── settings.json
+│   └── extensions.json
+├── src/                              ← All source code here
+│   ├── main.ts                       # Plugin entry, command registration
+│   ├── settings.ts                   # Settings interface and tab
+│   ├── exporter.ts                   # Core export logic
+│   ├── parser.ts                     # Markdown parsing
+│   ├── csv-writer.ts                 # CSV generation
+│   ├── file-watcher.ts               # File monitoring and debouncing
+│   └── types.ts                      # TypeScript interfaces
 ├── tests/
 │   ├── exporter.test.ts
 │   ├── parser.test.ts
-│   └── fixtures/            # Test markdown files
-├── manifest.json            # Plugin metadata
-├── package.json             # Dependencies
-├── tsconfig.json            # TypeScript config
-├── rollup.config.js         # Build configuration
+│   └── fixtures/                     # Test markdown files
+├── manifest.json                     ← Plugin metadata (root level)
+├── versions.json                     ← Version compatibility (root level)
+├── package.json                      ← Dependencies (root level)
+├── tsconfig.json                     ← TypeScript config (root level)
+├── esbuild.config.mjs                ← Build configuration (root level)
+├── styles.css                        ← Optional styling (root level)
+├── .eslintrc.json                    ← Linting config
+├── .prettierrc                       ← Formatting config
 ├── README.md
 └── LICENSE
 ```
+
+**Project Structure Rules:**
+- ✅ All source code in `src/` folder
+- ✅ Configuration files at root level
+- ✅ No solution file needed (TypeScript project, not .NET)
+- ✅ Use VS Code workspace for development
 
 ### Build System
 
@@ -272,6 +358,8 @@ npm run build      # Minified build for distribution
 npm test           # Run unit tests
 npm run test:coverage  # Generate coverage report
 ```
+
+**Build Tool**: esbuild (fast, modern bundler)
 
 ### Plugin Manifest
 
@@ -297,6 +385,7 @@ npm run test:coverage  # Generate coverage report
 - Registers commands, ribbon icon, status bar
 - Manages file watcher lifecycle
 - Handles settings loading/saving
+- Reference C# `Program.cs` for command-line argument patterns
 
 **TaskExportSettings (settings.ts)**
 - Extends `PluginSettingTab`
@@ -310,17 +399,21 @@ npm run test:coverage  # Generate coverage report
 - Calls parser for each file
 - Aggregates results
 - Writes CSV output
+- Reference C# `TaskExtractor.cs` for logic
 
 **MarkdownParser (parser.ts)**
 - Parses markdown content
 - Extracts headers and tasks
 - Maintains hierarchical context
 - Returns structured data
+- **Port directly from C# `MarkdownParser.cs`** - proven logic with all edge cases
 
 **CsvWriter (csv-writer.ts)**
 - Formats data as CSV
-- Handles escaping
+- Handles escaping (use RFC 4180 standard)
 - Writes to file via Obsidian API
+- Implements compression mode
+- **Port directly from C# `CsvExporter.cs`**
 
 **FileWatcher (file-watcher.ts)**
 - Subscribes to file events

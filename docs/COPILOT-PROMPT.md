@@ -6,6 +6,21 @@ Create an Obsidian plugin that extracts outstanding tasks from Markdown files an
 
 This iteration builds upon Iteration 1 (C# Console App) by integrating the task export functionality directly into Obsidian as a plugin, providing on-demand and automatic export capabilities.
 
+**Related Repository**: [markdown-task-export](https://github.com/tailormade-eu/markdown-task-export) - C# Console Application (Iteration 1)
+
+**⚠️ IMPORTANT FOR IMPLEMENTATION:**
+The C# console application is a **fully working reference implementation** with:
+- ✅ Complete task extraction logic (`MarkdownParser.cs`)
+- ✅ Hierarchical header parsing with unlimited depth
+- ✅ CSV generation with compression support (`CsvExporter.cs`)
+- ✅ Customer/Project name extraction (`TaskExtractor.cs`)
+- ✅ All edge cases handled (nested tasks, special characters, escaping)
+
+**Use the C# code as a reference** for implementing the TypeScript plugin. The logic should be **identical**, just ported to TypeScript/Obsidian API.
+
+**📋 Detailed Specifications:**
+See `docs/REQUIREMENTS.md` for comprehensive technical requirements, API usage, cross-platform considerations, and project structure.
+
 ## Requirements
 
 ### 1. Plugin Features
@@ -39,11 +54,13 @@ Find all unchecked tasks marked with `- [ ]` (checkbox syntax in markdown)
 
 ### 5. CSV Output Format (Same as Iteration 1)
 
-- Header row: `CustomerName,ProjectName,Header1,Header2,Header3,Task`
-- **Only include header columns that have values** (no empty trailing commas)
-- If Header2 doesn't exist, row should be: `CustomerName,ProjectName,Header1,Task` (skip empty Header2 and Header3 columns)
+- Header row: `CustomerName,ProjectName,Level1,Level2,Level3,...,Task`
+- **Dynamic columns**: Automatically adapts to maximum header depth
+- **Compression mode**: Optional removal of empty hierarchy columns (--compress-levels equivalent)
+- **Header control**: Option to include or exclude CSV header row
 - Handle commas within task text by properly escaping with quotes
 - Handle quotes within task text by doubling them
+- UTF-8 with BOM encoding for Excel compatibility
 
 ### 6. Output File
 
@@ -60,12 +77,15 @@ Create `outstanding_tasks.csv` in the configurable location (default: vault root
 
 ```typescript
 interface TaskExportSettings {
-    outputPath: string;              // Path for CSV output
+    outputPath: string;              // Path for CSV output (relative to vault)
     customersFolder: string;         // Root folder for customer files
     autoExport: boolean;             // Enable automatic export
     exportOnSave: boolean;           // Export when files are saved
     exportOnModify: boolean;         // Export when files are modified
     showNotifications: boolean;      // Show notifications on export
+    compressLevels: boolean;         // Compress empty levels (like --compress-levels)
+    includeHeader: boolean;          // Include CSV header row (like --no-header)
+    debounceDelay: number;           // Debounce delay in seconds (1-30)
 }
 ```
 
@@ -85,24 +105,64 @@ interface TaskExportSettings {
 
 ## Technical Details
 
-- Use **TypeScript** with Obsidian API
+### Cross-Platform Support
+
+**Platform Compatibility:**
+- ✅ Windows, macOS, Linux (desktop)
+- ✅ Android, iOS (mobile)
+- ✅ Web version
+- **One codebase works everywhere** - Obsidian uses web technologies on all platforms
+
+**Technology Stack:**
+- **TypeScript** - Primary language
+- **Obsidian Plugin API** - Use exclusively for file operations
+- **Node.js** - Development only (not required by users)
+- **esbuild** - Fast bundling
+
+**Important API Usage:**
+- ✅ Use `this.app.vault.adapter.write()` for file operations
+- ✅ Use `this.app.vault.adapter.read()` for reading files
+- ✅ Use `normalizePath()` for cross-platform path handling
+- ❌ Avoid Node.js modules (`fs`, `path`, `os`) - desktop only
+- ❌ Never use absolute paths outside vault on mobile
+
+**Platform Detection:**
+```typescript
+if (Platform.isMobile) {
+    // Mobile: limit to vault directory
+} else {
+    // Desktop: allow custom paths
+}
+```
+
+### Best Practices
+
 - Follow Obsidian plugin development best practices
-- Use `obsidian` module for API access
-- Properly handle file system operations through Obsidian's API
+- Properly handle file system operations through Obsidian's API only
 - Implement proper error handling and logging
 - Add progress indicators for large exports
+- Test on multiple platforms before release
 
 ## Plugin Structure
 
 ```
-task-export-plugin/
-├── main.ts                 // Plugin entry point
-├── settings.ts             // Settings interface and tab
-├── export.ts               // Core export logic
-├── parser.ts               // Markdown parsing logic
-├── csv-writer.ts           // CSV generation
-├── manifest.json           // Plugin manifest
-└── styles.css             // Optional styling
+obsidian-task-export-plugin/
+├── src/
+│   ├── main.ts                 // Plugin entry point
+│   ├── settings.ts             // Settings interface and tab
+│   ├── exporter.ts             // Core export logic
+│   ├── parser.ts               // Markdown parsing logic
+│   ├── csv-writer.ts           // CSV generation
+│   ├── file-watcher.ts         // File monitoring
+│   └── types.ts                // TypeScript interfaces
+├── manifest.json               // Plugin metadata
+├── versions.json               // Version compatibility
+├── package.json                // Dependencies
+├── tsconfig.json               // TypeScript config
+├── esbuild.config.mjs          // Build configuration
+├── styles.css                  // Optional styling
+├── README.md
+└── LICENSE
 ```
 
 ## Example User Workflows
