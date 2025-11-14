@@ -168,7 +168,8 @@ export default class TaskExportPlugin extends Plugin {
 				tasks,
 				this.settings.outputPath,
 				this.settings.compressLevels,
-				this.settings.includeHeader
+				this.settings.includeHeader,
+				this.settings.delimiter
 			);
 
 			// Update last export time

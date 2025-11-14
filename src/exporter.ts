@@ -15,7 +15,7 @@ export class TaskExporter {
 	constructor(app: App) {
 		this.app = app;
 		this.parser = new MarkdownParser();
-		this.csvWriter = new CsvWriter();
+		this.csvWriter = new CsvWriter();  // Will be recreated with delimiter in exportToFile
 	}
 
 	/**
@@ -81,9 +81,12 @@ export class TaskExporter {
 		tasks: TaskItem[], 
 		outputPath: string, 
 		compressLevels: boolean = false, 
-		includeHeader: boolean = true
+		includeHeader: boolean = true,
+		delimiter: ',' | ';' = ','
 	): Promise<void> {
-		const csv = this.csvWriter.generateCsv(tasks, compressLevels, includeHeader);
+		// Create CSV writer with specified delimiter
+		const csvWriter = new CsvWriter(delimiter);
+		const csv = csvWriter.generateCsv(tasks, compressLevels, includeHeader);
 		const normalizedPath = normalizePath(outputPath);
 		await this.app.vault.adapter.write(normalizedPath, csv);
 	}

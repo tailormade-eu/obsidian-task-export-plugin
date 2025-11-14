@@ -5,6 +5,12 @@ import { TaskItem } from './types';
  * Ported from C# CsvExporter.cs
  */
 export class CsvWriter {
+	private delimiter: string;
+
+	constructor(delimiter: ',' | ';' = ',') {
+		this.delimiter = delimiter;
+	}
+
 	/**
 	 * Generates CSV content from tasks with UTF-8 BOM encoding.
 	 */
@@ -22,17 +28,17 @@ export class CsvWriter {
 		
 		// Build header row based on max level depth
 		if (includeHeader) {
-			csv += 'CustomerName,ProjectName';
+			csv += `CustomerName${this.delimiter}ProjectName`;
 			for (let i = 1; i <= maxLevelDepth; i++) {
-				csv += `,Level${i}`;
+				csv += `${this.delimiter}Level${i}`;
 			}
-			csv += ',Task\n';
+			csv += `${this.delimiter}Task\n`;
 		}
 
 		// Write data rows
 		for (const task of tasks) {
 			csv += this.escapeField(task.customerName);
-			csv += ',';
+			csv += this.delimiter;
 			csv += this.escapeField(task.projectName);
 			
 			if (compressLevels) {
@@ -41,20 +47,20 @@ export class CsvWriter {
 				
 				// Output non-empty levels (no padding needed - each row can have different column count)
 				for (const level of nonEmptyLevels) {
-					csv += ',';
+					csv += this.delimiter;
 					csv += this.escapeField(level);
 				}
 			} else {
 				// Non-compressed mode: output all levels including empty slots to preserve hierarchy
 				for (let i = 0; i < maxLevelDepth; i++) {
-					csv += ',';
+					csv += this.delimiter;
 					if (i < task.levels.length) {
 						csv += this.escapeField(task.levels[i]);
 					}
 				}
 			}
 			
-			csv += ',';
+			csv += this.delimiter;
 			csv += this.escapeField(task.task);
 			csv += '\n';
 		}
@@ -96,7 +102,7 @@ export class CsvWriter {
 
 	/**
 	 * Escapes a CSV field according to RFC 4180.
-	 * - Wraps in quotes if contains comma, newline, or quote
+	 * - Wraps in quotes if contains delimiter, newline, or quote
 	 * - Doubles any quotes inside the field
 	 */
 	private escapeField(field: string): string {
@@ -105,7 +111,7 @@ export class CsvWriter {
 		}
 
 		// Check if escaping is needed
-		const needsQuotes = field.includes(',') || field.includes('"') || field.includes('\n') || field.includes('\r');
+		const needsQuotes = field.includes(this.delimiter) || field.includes('"') || field.includes('\n') || field.includes('\r');
 
 		if (needsQuotes) {
 			// Double any existing quotes

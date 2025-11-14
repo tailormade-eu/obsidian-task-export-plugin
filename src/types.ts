@@ -11,6 +11,7 @@ export interface TaskExportSettings {
 	compressLevels: boolean;         // Remove empty hierarchy columns
 	includeHeader: boolean;          // Include CSV header row
 	debounceDelay: number;           // Debounce delay in seconds (1-30)
+	delimiter: ',' | ';';            // CSV delimiter: comma or semicolon
 }
 
 /**
@@ -25,7 +26,8 @@ export const DEFAULT_SETTINGS: TaskExportSettings = {
 	showNotifications: true,
 	compressLevels: false,
 	includeHeader: true,
-	debounceDelay: 3
+	debounceDelay: 3,
+	delimiter: ','
 };
 
 /**
