@@ -36,7 +36,7 @@ This is a TypeScript port of the [markdown-task-export](https://github.com/tailo
 1. Download the latest release from [GitHub Releases](https://github.com/tailormade-eu/obsidian-task-export-plugin/releases)
 2. Extract `main.js`, `manifest.json`, and `styles.css` to:
    ```
-   VaultFolder/.obsidian/plugins/task-export/
+   VaultFolder/.obsidian/plugins/task-export-to-csv/
    ```
 3. Reload Obsidian
 4. Enable plugin in Settings → Community Plugins
@@ -139,7 +139,7 @@ YourVault/
 ├── outstanding_tasks.csv       ← Output file
 └── .obsidian/
     └── plugins/
-        └── task-export/
+        └── task-export-to-csv/
 ```
 
 ### Markdown Task Format
@@ -275,7 +275,7 @@ Install [Hot Reload Plugin](https://github.com/pjeby/hot-reload) for automatic p
 ### Plugin Not Loading
 
 1. Check console for errors: `Ctrl/Cmd + Shift + I`
-2. Verify files in `.obsidian/plugins/task-export/`:
+2. Verify files in `.obsidian/plugins/task-export-to-csv/`:
    - `main.js`
    - `manifest.json`
    - `styles.css` (optional)

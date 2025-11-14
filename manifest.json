@@ -1,5 +1,5 @@
 {
-	"id": "task-export",
+	"id": "task-export-to-csv",
 	"name": "Task Export Tool",
 	"version": "1.0.0",
 	"minAppVersion": "1.0.0",
