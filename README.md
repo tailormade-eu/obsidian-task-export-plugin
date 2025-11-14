@@ -6,6 +6,8 @@ Automatically export outstanding tasks from your Obsidian vault to CSV for Manic
 
 An Obsidian plugin that monitors your customer project files and automatically exports outstanding tasks to CSV format. Integrates seamlessly into your Obsidian workflow with command palette support, automatic file watching, and configurable export options.
 
+This is a TypeScript port of the [markdown-task-export](https://github.com/tailormade-eu/markdown-task-export) C# console application, adapted for Obsidian with enhanced UI features.
+
 ## Features
 
 - 🎨 **Command Palette Integration** - Export tasks with keyboard shortcuts
@@ -175,7 +177,7 @@ Customer A,Project 1,Section,Subsection,Another task
 
 - TypeScript
 - Obsidian Plugin API
-- Rollup (bundling)
+- esbuild (bundling)
 - Node.js (development)
 
 ### Project Structure
@@ -188,11 +190,12 @@ obsidian-task-export-plugin/
 │   ├── exporter.ts          # Export logic
 │   ├── parser.ts            # Markdown parsing
 │   ├── csv-writer.ts        # CSV generation
-│   └── file-watcher.ts      # File monitoring
+│   ├── file-watcher.ts      # File monitoring
+│   └── types.ts             # TypeScript interfaces
 ├── manifest.json            # Plugin metadata
 ├── package.json             # Dependencies
 ├── tsconfig.json            # TypeScript config
-├── rollup.config.js         # Build config
+├── esbuild.config.mjs       # Build config
 └── README.md
 ```
 

@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+
+# Build output
+main.js
+main.js.map
+*.js.map
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# npm package files
+*.tgz
+
+# Temporary files
+*.tmp
+*.log
