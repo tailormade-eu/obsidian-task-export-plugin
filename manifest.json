@@ -1,9 +1,9 @@
 {
-	"id": "task-export-plugin",
+	"id": "task-export",
 	"name": "Task Export Tool",
 	"version": "1.0.0",
 	"minAppVersion": "1.0.0",
-	"description": "Export outstanding tasks to CSV for time tracking integration",
+	"description": "Export outstanding tasks to CSV for time tracking integration.",
 	"author": "Raoul Jacobs",
 	"authorUrl": "https://github.com/tailormade-eu",
 	"isDesktopOnly": false
