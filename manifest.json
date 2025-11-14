@@ -1,7 +1,7 @@
 {
 	"id": "task-export-to-csv",
 	"name": "Task Export Tool",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "1.0.0",
 	"description": "Export outstanding tasks to CSV for time tracking integration (e.g. ManicTime).",
 	"author": "Raoul Jacobs",

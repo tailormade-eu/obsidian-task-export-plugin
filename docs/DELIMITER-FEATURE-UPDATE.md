@@ -1,12 +1,23 @@
-# Add Configurable CSV Delimiter Feature to Obsidian Plugin
+# Add Configurable CSV Delimiter Feature to Obsidian Plugin v1.0.1
 
 ## Context
 
-The C# console application (markdown-task-export) has been updated with a configurable CSV delimiter feature. This allows users to choose between comma (`,`) and semicolon (`;`) delimiters.
+The C# console application (markdown-task-export) has been updated to **version 1.0.1** with a configurable CSV delimiter feature. This allows users to choose between comma (`,`) and semicolon (`;`) delimiters.
 
-**Reference Implementation**: [markdown-task-export](https://github.com/tailormade-eu/markdown-task-export)
+**Reference Implementation**: [markdown-task-export v1.0.1](https://github.com/tailormade-eu/markdown-task-export/releases/tag/1.0.1)
 
-## Changes in C# Version (Iteration 1)
+## Task Overview
+
+**Implement the delimiter feature** from the C# version (v1.0.1) into the Obsidian plugin and:
+1. Add delimiter configuration to settings
+2. Update CSV generation logic
+3. Update field escaping logic
+4. Build the plugin (`npm run build`)
+5. Test with both delimiters
+6. Update version to 1.0.1
+7. Commit and prepare for release
+
+## Changes in C# Version (Iteration 1 - v1.0.1)
 
 ### 1. ExportOptions.cs
 Added `Delimiter` property:
@@ -217,11 +228,110 @@ Verify:
 
 ## Implementation Priority
 
-**Priority Level**: Medium
-- Not blocking for MVP
+**Priority Level**: High - Include in v1.0.1 release
+- Feature parity with C# version (v1.0.1)
 - Adds significant value for European users
 - Simple to implement (mirrors C# version)
-- Should be included in v1.0.0 release
+- Must be included before publishing to Obsidian community
+
+## Build and Release Steps
+
+After implementing the delimiter feature:
+
+### 1. Build the Plugin
+
+```bash
+cd obsidian-task-export-plugin
+
+# Install dependencies (if not already done)
+npm install
+
+# Build production version
+npm run build
+```
+
+This generates `main.js` in the root directory.
+
+### 2. Verify Version Numbers
+
+Ensure all version files are updated to **1.0.1**:
+- ✅ `manifest.json` → `"version": "1.0.1"`
+- ✅ `package.json` → `"version": "1.0.1"`
+- ✅ `versions.json` → Add entry `"1.0.1": "1.0.0"`
+
+### 3. Test the Plugin
+
+```bash
+# Copy files to test vault
+cp main.js manifest.json styles.css ~/.obsidian/plugins/task-export-to-csv/
+
+# Open Obsidian and test:
+# 1. Check settings for delimiter dropdown
+# 2. Export with comma delimiter
+# 3. Export with semicolon delimiter
+# 4. Verify CSV output correctness
+```
+
+### 4. Commit Changes
+
+```bash
+git add .
+git commit -m "Release v1.0.1: Add configurable CSV delimiter"
+git push origin main
+```
+
+### 5. Create Git Tag
+
+```bash
+git tag -a 1.0.1 -m "v1.0.1 - Add configurable CSV delimiter"
+git push origin 1.0.1
+```
+
+### 6. Create GitHub Release
+
+- Go to GitHub Releases
+- Tag: `1.0.1`
+- Title: `v1.0.1 - Configurable CSV Delimiter`
+- Upload files: `main.js`, `manifest.json`, `styles.css`
+- Add release notes (see below)
+
+### 7. Update Obsidian Community Plugin PR
+
+Update the PR in obsidian-releases repository:
+- Change version to `1.0.1` 
+- Ensure release has required files
+- Wait for review
+
+## Release Notes Template
+
+```markdown
+## What's New in v1.0.1
+
+### ✨ New Features
+
+- **Configurable CSV Delimiter**: Choose between comma (`,`) or semicolon (`;`) in settings
+- Improved Excel compatibility for European locales
+- Maintains feature parity with C# console app v1.0.1
+
+### 🎨 User Interface
+
+- New dropdown in settings: "CSV Delimiter"
+- Options: Comma (standard) or Semicolon (European)
+
+### 🌍 Regional Support
+
+Better support for regions where semicolon is the standard CSV delimiter (many European countries where comma is used as decimal separator).
+
+### 🔧 Technical Details
+
+- Field escaping respects the chosen delimiter
+- CSV output follows RFC 4180 standard
+- UTF-8 with BOM encoding for Excel compatibility
+
+---
+
+**Full Changelog**: https://github.com/tailormade-eu/obsidian-task-export-plugin/compare/1.0.0...1.0.1
+```
 
 ## Documentation Updates
 
