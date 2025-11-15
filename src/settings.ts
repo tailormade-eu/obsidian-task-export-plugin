@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { PluginSettingTab, Setting } from 'obsidian';
 import TaskExportPlugin from './main';
 
 /**
@@ -7,7 +7,7 @@ import TaskExportPlugin from './main';
 export class TaskExportSettingTab extends PluginSettingTab {
 	plugin: TaskExportPlugin;
 
-	constructor(app: App, plugin: TaskExportPlugin) {
+	constructor(app: any, plugin: TaskExportPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -17,7 +17,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', { text: 'Task Export Tool Settings' });
+		new Setting(containerEl)
+			.setName('Task Export Tool Settings')
+			.setHeading();
 
 		// Output Path
 		new Setting(containerEl)
@@ -26,9 +28,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.addText(text => text
 				.setPlaceholder('outstanding_tasks.csv')
 				.setValue(this.plugin.settings.outputPath)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.outputPath = value || 'outstanding_tasks.csv';
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 				}));
 
 		// Customers Folder
@@ -38,9 +40,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.addText(text => text
 				.setPlaceholder('Customers')
 				.setValue(this.plugin.settings.customersFolder)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.customersFolder = value || 'Customers';
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 					this.plugin.updateFileWatcher();
 				}));
 
@@ -50,9 +52,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.setDesc('Automatically export tasks when files change')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.autoExport)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.autoExport = value;
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 					this.plugin.updateFileWatcher();
 				}));
 
@@ -62,9 +64,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.setDesc('Trigger export when files are saved')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.exportOnSave)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.exportOnSave = value;
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 				}));
 
 		// Export on Modify
@@ -73,9 +75,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.setDesc('Trigger export when files are modified (more frequent)')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.exportOnModify)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.exportOnModify = value;
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 				}));
 
 		// Show Notifications
@@ -84,9 +86,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.setDesc('Display notifications on export completion')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.showNotifications)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.showNotifications = value;
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 				}));
 
 		// Compress Levels
@@ -95,9 +97,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.setDesc('Remove empty hierarchy columns from CSV output')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.compressLevels)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.compressLevels = value;
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 				}));
 
 		// Include Header
@@ -106,22 +108,22 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.setDesc('Include CSV header row in output')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.includeHeader)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.includeHeader = value;
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 				}));
 
 		// CSV Delimiter
 		new Setting(containerEl)
-			.setName('CSV Delimiter')
+			.setName('CSV delimiter')
 			.setDesc('Choose delimiter for CSV output. Comma is standard, semicolon is common in Europe.')
 			.addDropdown(dropdown => dropdown
 				.addOption(',', 'Comma (,)')
 				.addOption(';', 'Semicolon (;)')
 				.setValue(this.plugin.settings.delimiter)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.delimiter = value as ',' | ';';
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 				}));
 
 		// Debounce Delay
@@ -132,9 +134,9 @@ export class TaskExportSettingTab extends PluginSettingTab {
 				.setLimits(1, 30, 1)
 				.setValue(this.plugin.settings.debounceDelay)
 				.setDynamicTooltip()
-				.onChange(async (value) => {
+				.onChange((value) => {
 					this.plugin.settings.debounceDelay = value;
-					await this.plugin.saveSettings();
+					void this.plugin.saveSettings();
 					this.plugin.updateFileWatcher();
 				}));
 	}

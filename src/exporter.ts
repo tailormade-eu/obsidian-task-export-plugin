@@ -52,7 +52,7 @@ export class TaskExporter {
 			}
 			
 			if (verbose) {
-				console.log(`Processing: ${customerName} / ${projectName}`);
+			console.debug(`Processing: ${customerName} / ${projectName}`);
 			}
 			
 			try {
@@ -63,7 +63,7 @@ export class TaskExporter {
 					allTasks.push(...tasks);
 					
 					if (verbose) {
-						console.log(`  Found ${tasks.length} task(s)`);
+						console.debug(`  Found ${tasks.length} task(s)`);
 					}
 				}
 			} catch (ex) {

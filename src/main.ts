@@ -81,13 +81,13 @@ export default class TaskExportPlugin extends Plugin {
 		// Update file watcher state
 		this.updateFileWatcher();
 
-		console.log('Task Export Plugin loaded');
+		console.debug('Task Export Plugin loaded');
 	}
 
 	onunload() {
 		// Disable file watcher
 		this.fileWatcher.disable();
-		console.log('Task Export Plugin unloaded');
+		console.debug('Task Export Plugin unloaded');
 	}
 
 	async loadSettings() {
