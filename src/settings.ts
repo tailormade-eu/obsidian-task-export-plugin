@@ -111,6 +111,19 @@ export class TaskExportSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		// CSV Delimiter
+		new Setting(containerEl)
+			.setName('CSV Delimiter')
+			.setDesc('Choose delimiter for CSV output. Comma is standard, semicolon is common in Europe.')
+			.addDropdown(dropdown => dropdown
+				.addOption(',', 'Comma (,)')
+				.addOption(';', 'Semicolon (;)')
+				.setValue(this.plugin.settings.delimiter)
+				.onChange(async (value) => {
+					this.plugin.settings.delimiter = value as ',' | ';';
+					await this.plugin.saveSettings();
+				}));
+
 		// Debounce Delay
 		new Setting(containerEl)
 			.setName('Debounce delay')

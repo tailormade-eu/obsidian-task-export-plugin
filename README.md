@@ -105,7 +105,12 @@ View last export time and status in bottom status bar:
 | **Export on Save** | Trigger on file save | `true` | Toggle |
 | **Export on Modify** | Trigger on any modification | `false` | Toggle |
 | **Show Notifications** | Display export notifications | `true` | Toggle |
+| **CSV Delimiter** | Choose comma or semicolon delimiter | `,` (comma) | Dropdown |
+| **Compress Levels** | Remove empty hierarchy columns | `false` | Toggle |
+| **Include Header** | Include CSV header row in output | `true` | Toggle |
 | **Debounce Delay** | Wait time after changes (seconds) | `3` | Number |
+
+**Note for European Users**: If Excel doesn't open the CSV correctly, try changing the delimiter to semicolon in settings. Many European locales use semicolon as the standard CSV delimiter since comma is used as the decimal separator.
 
 ### Accessing Settings
 
@@ -161,7 +166,7 @@ Standard Markdown task checkboxes:
 
 ## Output Format
 
-CSV with dynamic columns:
+CSV with dynamic columns (comma-separated by default, configurable to semicolon):
 
 ```csv
 CustomerName,ProjectName,Header1,Header2,Header3,Task
@@ -170,6 +175,8 @@ Customer A,Project 1,Section,Task with sub-items
 Customer A,Project 1,Section,Sub-task (nested)
 Customer A,Project 1,Section,Subsection,Another task
 ```
+
+The delimiter can be changed to semicolon (`;`) in the plugin settings for better compatibility with European Excel versions.
 
 ## Technical Details
 
