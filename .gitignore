@@ -1,8 +1,8 @@
 # Node modules
 node_modules/
 
-# Build output
-main.js
+# Build output (keep main.js for plugin distribution)
+# main.js should be committed for Obsidian plugin releases
 main.js.map
 *.js.map
 
