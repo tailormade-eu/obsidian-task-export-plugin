@@ -23,7 +23,7 @@ export default class TaskExportPlugin extends Plugin {
 
 		// Initialize file watcher
 		this.fileWatcher = new FileWatcher(
-			() => this.autoExport(),
+			() => void this.autoExport(),
 			this.settings.debounceDelay,
 			this.settings.customersFolder
 		);

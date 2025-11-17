@@ -445,7 +445,7 @@ var TaskExportPlugin = class extends import_obsidian3.Plugin {
     await this.loadSettings();
     this.exporter = new TaskExporter(this.app);
     this.fileWatcher = new FileWatcher(
-      () => this.autoExport(),
+      () => void this.autoExport(),
       this.settings.debounceDelay,
       this.settings.customersFolder
     );
