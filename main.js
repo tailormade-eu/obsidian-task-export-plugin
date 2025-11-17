@@ -53,7 +53,6 @@ var TaskExportSettingTab = class extends import_obsidian.PluginSettingTab {
   display() {
     const { containerEl } = this;
     containerEl.empty();
-    new import_obsidian.Setting(containerEl).setName("Task Export Tool Settings").setHeading();
     new import_obsidian.Setting(containerEl).setName("Output path").setDesc("CSV file location (relative to vault root)").addText((text) => text.setPlaceholder("outstanding_tasks.csv").setValue(this.plugin.settings.outputPath).onChange((value) => {
       this.plugin.settings.outputPath = value || "outstanding_tasks.csv";
       void this.plugin.saveSettings();
@@ -449,19 +448,19 @@ var TaskExportPlugin = class extends import_obsidian3.Plugin {
       this.settings.debounceDelay,
       this.settings.customersFolder
     );
-    this.addRibbonIcon("file-text", "Export Outstanding Tasks", async () => {
+    this.addRibbonIcon("file-text", "Export outstanding tasks", async () => {
       await this.exportTasks();
     });
     this.addCommand({
       id: "export-tasks",
-      name: "Export Outstanding Tasks",
+      name: "Export outstanding tasks",
       callback: async () => {
         await this.exportTasks();
       }
     });
     this.addCommand({
       id: "toggle-auto-export",
-      name: "Toggle Auto-Export",
+      name: "Toggle auto-export",
       callback: async () => {
         this.settings.autoExport = !this.settings.autoExport;
         await this.saveSettings();
@@ -472,7 +471,7 @@ var TaskExportPlugin = class extends import_obsidian3.Plugin {
     });
     this.addCommand({
       id: "open-settings",
-      name: "Open Export Settings",
+      name: "Open export settings",
       callback: () => {
         this.app.setting.open();
         this.app.setting.openTabById(this.manifest.id);

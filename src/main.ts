@@ -29,14 +29,14 @@ export default class TaskExportPlugin extends Plugin {
 		);
 
 		// Add ribbon icon
-		this.addRibbonIcon('file-text', 'Export Outstanding Tasks', async () => {
+		this.addRibbonIcon('file-text', 'Export outstanding tasks', async () => {
 			await this.exportTasks();
 		});
 
 		// Add command: Export Outstanding Tasks
 		this.addCommand({
 			id: 'export-tasks',
-			name: 'Export Outstanding Tasks',
+			name: 'Export outstanding tasks',
 			callback: async () => {
 				await this.exportTasks();
 			}
@@ -45,7 +45,7 @@ export default class TaskExportPlugin extends Plugin {
 		// Add command: Toggle Auto-Export
 		this.addCommand({
 			id: 'toggle-auto-export',
-			name: 'Toggle Auto-Export',
+			name: 'Toggle auto-export',
 			callback: async () => {
 				this.settings.autoExport = !this.settings.autoExport;
 				await this.saveSettings();
@@ -59,7 +59,7 @@ export default class TaskExportPlugin extends Plugin {
 		// Add command: Open Export Settings
 		this.addCommand({
 			id: 'open-settings',
-			name: 'Open Export Settings',
+			name: 'Open export settings',
 			callback: () => {
 				// @ts-ignore - accessing private API
 				this.app.setting.open();

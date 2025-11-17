@@ -1,4 +1,4 @@
-import { PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting } from 'obsidian';
 import TaskExportPlugin from './main';
 
 /**
@@ -7,7 +7,7 @@ import TaskExportPlugin from './main';
 export class TaskExportSettingTab extends PluginSettingTab {
 	plugin: TaskExportPlugin;
 
-	constructor(app: any, plugin: TaskExportPlugin) {
+	constructor(app: App, plugin: TaskExportPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -16,10 +16,6 @@ export class TaskExportSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 
 		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName('Task Export Tool Settings')
-			.setHeading();
 
 		// Output Path
 		new Setting(containerEl)
