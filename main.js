@@ -53,8 +53,8 @@ var TaskExportSettingTab = class extends import_obsidian.PluginSettingTab {
   display() {
     const { containerEl } = this;
     containerEl.empty();
-    new import_obsidian.Setting(containerEl).setName("Output path").setDesc("CSV file location (relative to vault root)").addText((text) => text.setPlaceholder("outstanding_tasks.csv").setValue(this.plugin.settings.outputPath).onChange((value) => {
-      this.plugin.settings.outputPath = value || "outstanding_tasks.csv";
+    new import_obsidian.Setting(containerEl).setName("Output path").setDesc("CSV file location (relative to vault root)").addText((text) => text.setPlaceholder("tasks.csv").setValue(this.plugin.settings.outputPath).onChange((value) => {
+      this.plugin.settings.outputPath = value || "tasks.csv";
       void this.plugin.saveSettings();
     }));
     new import_obsidian.Setting(containerEl).setName("Customers folder").setDesc("Root folder containing customer files").addText((text) => text.setPlaceholder("Customers").setValue(this.plugin.settings.customersFolder).onChange((value) => {
@@ -87,7 +87,7 @@ var TaskExportSettingTab = class extends import_obsidian.PluginSettingTab {
       this.plugin.settings.includeHeader = value;
       void this.plugin.saveSettings();
     }));
-    new import_obsidian.Setting(containerEl).setName("CSV delimiter").setDesc("Choose delimiter for CSV output. Comma is standard, semicolon is common in Europe.").addDropdown((dropdown) => dropdown.addOption(",", "Comma (,)").addOption(";", "Semicolon (;)").setValue(this.plugin.settings.delimiter).onChange((value) => {
+    new import_obsidian.Setting(containerEl).setName("CSV delimiter").setDesc("Delimiter for CSV output: comma is standard, semicolon is common in Europe").addDropdown((dropdown) => dropdown.addOption(",", "Comma (,)").addOption(";", "Semicolon (;)").setValue(this.plugin.settings.delimiter).onChange((value) => {
       this.plugin.settings.delimiter = value;
       void this.plugin.saveSettings();
     }));

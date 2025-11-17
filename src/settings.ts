@@ -22,10 +22,10 @@ export class TaskExportSettingTab extends PluginSettingTab {
 			.setName('Output path')
 			.setDesc('CSV file location (relative to vault root)')
 			.addText(text => text
-				.setPlaceholder('outstanding_tasks.csv')
+				.setPlaceholder('tasks.csv')
 				.setValue(this.plugin.settings.outputPath)
 				.onChange((value) => {
-					this.plugin.settings.outputPath = value || 'outstanding_tasks.csv';
+					this.plugin.settings.outputPath = value || 'tasks.csv';
 					void this.plugin.saveSettings();
 				}));
 
@@ -112,7 +112,7 @@ export class TaskExportSettingTab extends PluginSettingTab {
 		// CSV Delimiter
 		new Setting(containerEl)
 			.setName('CSV delimiter')
-			.setDesc('Choose delimiter for CSV output. Comma is standard, semicolon is common in Europe.')
+			.setDesc('Delimiter for CSV output: comma is standard, semicolon is common in Europe')
 			.addDropdown(dropdown => dropdown
 				.addOption(',', 'Comma (,)')
 				.addOption(';', 'Semicolon (;)')

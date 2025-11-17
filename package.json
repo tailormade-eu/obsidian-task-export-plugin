@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-task-export-plugin",
-	"version": "1.0.3",
+	"version": "1.0.4",
   "description": "Export outstanding tasks from Obsidian vault to CSV for ManicTime integration",
   "main": "main.js",
   "scripts": {
