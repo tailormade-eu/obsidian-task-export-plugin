@@ -107,7 +107,7 @@ var _MarkdownParser = class {
   /**
    * Parses a markdown file and extracts all outstanding tasks.
    */
-  parseFile(content, customerName, projectName) {
+  parseFile(content, customerName, projectName, folderSegments = []) {
     const tasks = [];
     const lines = content.split("\n");
     const headers = [];
@@ -155,6 +155,12 @@ var _MarkdownParser = class {
             levels: []
           };
           const levels = [];
+          if (folderSegments && folderSegments.length > 0) {
+            levels.push(...folderSegments);
+          }
+          if (projectName && projectName.length > 0) {
+            levels.push(projectName);
+          }
           levels.push(...headers);
           if (parentTaskStack.length > 0) {
             const parents = [...parentTaskStack].reverse();
@@ -216,7 +222,7 @@ var CsvWriter = class {
     const maxLevelDepth = compressLevels ? this.determineMaxCompressedLevelDepth(tasks) : this.determineMaxLevelDepth(tasks);
     let csv = "";
     if (includeHeader) {
-      csv += `CustomerName${this.delimiter}ProjectName`;
+      csv += `CustomerName`;
       for (let i = 1; i <= maxLevelDepth; i++) {
         csv += `${this.delimiter}Level${i}`;
       }
@@ -225,8 +231,6 @@ var CsvWriter = class {
     }
     for (const task of tasks) {
       csv += this.escapeField(task.customerName);
-      csv += this.delimiter;
-      csv += this.escapeField(task.projectName);
       if (compressLevels) {
         const nonEmptyLevels = task.levels.filter((l) => l !== "");
         for (const level of nonEmptyLevels) {
@@ -313,7 +317,7 @@ var TaskExporter = class {
       (file) => file.path.startsWith(normalizedPath + "/")
     );
     for (const file of customerFiles) {
-      const { customerName, projectName } = this.extractCustomerAndProject(file, normalizedPath);
+      const { customerName, projectName, folderSegments } = this.extractCustomerAndProject(file, normalizedPath);
       if (customerName.startsWith(".")) {
         continue;
       }
@@ -322,7 +326,7 @@ var TaskExporter = class {
       }
       try {
         const content = await this.app.vault.read(file);
-        const tasks = this.parser.parseFile(content, customerName, projectName);
+        const tasks = this.parser.parseFile(content, customerName, projectName, folderSegments);
         if (tasks.length > 0) {
           allTasks.push(...tasks);
           if (verbose) {
@@ -354,7 +358,8 @@ var TaskExporter = class {
     const parts = relativePath.split("/");
     const customerName = parts[0];
     const projectName = file.basename;
-    return { customerName, projectName };
+    const folderSegments = parts.length > 2 ? parts.slice(1, parts.length - 1) : [];
+    return { customerName, projectName, folderSegments };
   }
 };
 
