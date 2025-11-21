@@ -169,14 +169,26 @@ Standard Markdown task checkboxes:
 CSV with dynamic columns (comma-separated by default, configurable to semicolon):
 
 ```csv
-CustomerName,ProjectName,Header1,Header2,Header3,Task
+CustomerName,Level1,Level2,Level3,Task
 Customer A,Project 1,Section,Outstanding task
 Customer A,Project 1,Section,Task with sub-items
 Customer A,Project 1,Section,Sub-task (nested)
 Customer A,Project 1,Section,Subsection,Another task
 ```
 
-The delimiter can be changed to semicolon (`;`) in the plugin settings for better compatibility with European Excel versions.
+Notes:
+- **Level columns**: The plugin uses generic `Level1..LevelN` columns for hierarchical path data. These contain, in order: any subfolder segments under the customer folder, then the project (markdown file) name, followed by markdown header segments and parent task text as present.
+- **Compression**: When `Compress Levels` is enabled the CSV will omit empty trailing `Level` columns for each row; when disabled rows are padded to the maximum level depth.
+- The delimiter can be changed to semicolon (`;`) in the plugin settings for better compatibility with European Excel versions.
+
+Example
+
+For a file under the `Customers` folder such as `Customers/<CustomerName>/<Subfolder...>/<ProjectName>.md` containing a top-level task in a `Section`, a produced CSV row will look like:
+
+```csv
+CustomerName,Level1,Level2,Task
+<CustomerName>,<Subfolder>,<ProjectName>,Section - Outstanding task
+```
 
 ## Technical Details
 
