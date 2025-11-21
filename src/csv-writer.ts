@@ -28,7 +28,8 @@ export class CsvWriter {
 		
 		// Build header row based on max level depth
 		if (includeHeader) {
-			csv += `CustomerName${this.delimiter}ProjectName`;
+			// Emit CustomerName, then Level columns (first level may be project name or a subfolder), then Task
+			csv += `CustomerName`;
 			for (let i = 1; i <= maxLevelDepth; i++) {
 				csv += `${this.delimiter}Level${i}`;
 			}
@@ -38,9 +39,7 @@ export class CsvWriter {
 		// Write data rows
 		for (const task of tasks) {
 			csv += this.escapeField(task.customerName);
-			csv += this.delimiter;
-			csv += this.escapeField(task.projectName);
-			
+            
 			if (compressLevels) {
 				// Compressed mode: only output non-empty levels, skipping empty slots
 				const nonEmptyLevels = task.levels.filter(l => l !== '');
@@ -59,7 +58,6 @@ export class CsvWriter {
 					}
 				}
 			}
-			
 			csv += this.delimiter;
 			csv += this.escapeField(task.task);
 			csv += '\n';

@@ -43,8 +43,8 @@ export class TaskExporter {
 		
 		// Process each file
 		for (const file of customerFiles) {
-			// Extract customer name and project name from file path
-			const { customerName, projectName } = this.extractCustomerAndProject(file, normalizedPath);
+			// Extract customer name, project name and folder segments from file path
+			const { customerName, projectName, folderSegments } = this.extractCustomerAndProject(file, normalizedPath);
 			
 			// Skip files in hidden directories
 			if (customerName.startsWith('.')) {
@@ -57,7 +57,8 @@ export class TaskExporter {
 			
 			try {
 				const content = await this.app.vault.read(file);
-				const tasks = this.parser.parseFile(content, customerName, projectName);
+				// Pass folderSegments into parser so levels can include folder hierarchy
+				const tasks = this.parser.parseFile(content, customerName, projectName, folderSegments);
 				
 				if (tasks.length > 0) {
 					allTasks.push(...tasks);
@@ -96,7 +97,7 @@ export class TaskExporter {
 	 * Customer name is the first folder under customersFolder.
 	 * Project name is the filename without extension.
 	 */
-	private extractCustomerAndProject(file: TFile, customersFolder: string): { customerName: string, projectName: string } {
+	private extractCustomerAndProject(file: TFile, customersFolder: string): { customerName: string, projectName: string, folderSegments: string[] } {
 		// Remove the customers folder prefix from the path
 		let relativePath = file.path.substring(customersFolder.length + 1);
 		
@@ -108,7 +109,11 @@ export class TaskExporter {
 		
 		// Project name is the filename without extension
 		const projectName = file.basename;
-		
-		return { customerName, projectName };
+
+		// Folder segments are the intermediate path parts between the customer folder and the file name
+		// parts = [ customer, sub1, sub2, ..., filename ] so folderSegments should be parts.slice(1, parts.length - 1)
+		const folderSegments = parts.length > 2 ? parts.slice(1, parts.length - 1) : [];
+
+		return { customerName, projectName, folderSegments };
 	}
 }

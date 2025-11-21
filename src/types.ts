@@ -36,6 +36,8 @@ export const DEFAULT_SETTINGS: TaskExportSettings = {
 export interface TaskItem {
 	customerName: string;
 	projectName: string;
-	levels: string[];  // Hierarchical headers and parent tasks
+	// `levels` contains folder segments (subfolders under the customer),
+	// followed by document header levels (##, ###, ...), then parent task texts.
+	levels: string[];
 	task: string;      // The actual task text
 }

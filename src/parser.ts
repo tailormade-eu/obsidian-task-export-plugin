@@ -13,7 +13,7 @@ export class MarkdownParser {
 	/**
 	 * Parses a markdown file and extracts all outstanding tasks.
 	 */
-	parseFile(content: string, customerName: string, projectName: string): TaskItem[] {
+	parseFile(content: string, customerName: string, projectName: string, folderSegments: string[] = []): TaskItem[] {
 		const tasks: TaskItem[] = [];
 		const lines = content.split('\n');
 		
@@ -91,9 +91,19 @@ export class MarkdownParser {
 						levels: []
 					};
 					
-					// Add document headers - keep all levels including empty ones for proper structure
+					// Build levels with folder segments first, then document headers
 					const levels: string[] = [];
-					
+
+					// Insert folder segments (subfolders under the customer folder)
+					if (folderSegments && folderSegments.length > 0) {
+						levels.push(...folderSegments);
+					}
+
+					// Insert the project name as a level after folder segments (so it appears after subfolders)
+					if (projectName && projectName.length > 0) {
+						levels.push(projectName);
+					}
+
 					// Copy all header levels (including empty ones) to preserve hierarchy
 					levels.push(...headers);
 					
